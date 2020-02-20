@@ -1,8 +1,9 @@
 import React from "react";
 import DatePicker from "react-datepicker";
+import moment from 'moment';
 
 const Table = (props) => {
-  const {convertDate, defaultDate, FilterCreated,
+  const {defaultDate, FilterCreated,
     options: {items, nameOrder, priceOrder, createdOrder, quantityOrder, lastModifiedOrder}, onSortClick} = props;
   return (
     <div className="pa4 fs-normal">
@@ -59,8 +60,8 @@ const Table = (props) => {
               <td className="pa3 f5 br--left">{row.name}</td>
               <td className="pa3 f5 ">{row.price}</td>
               <td className="pa3 f5 ">{row.quantity}</td>
-              <td className="pa3 f5 ">{convertDate(row.created, 'epoch').stringDate}</td>
-              <td className="pa3 f5 br--right">{convertDate(row.lastModified, 'epoch').stringDate}</td>
+              <td className="pa3 f5 ">{moment.unix(row.created).format('LL')}</td>
+              <td className="pa3 f5 br--right">{moment.unix(row.lastModified).format('LL')}</td>
             </tr>
           )})}
           </tbody>

@@ -4,6 +4,7 @@ import {Table, NavBar} from './components';
 import _ from 'lodash'
 import 'react-datepicker/dist/react-datepicker.css';
 import Search from "./components/Search";
+import moment from 'moment';
 
 const App = () => {
   let initialState = {class: 'sort', sorted: false};
@@ -30,10 +31,16 @@ const App = () => {
       console.log(err)
     })}, []);
 
+
+
   function sortItems(e, currentColumn){
-    e.preventDefault();
-    const column = currentColumn+'Order';
+    e.preventDefault();    
+    const column = `${ currentColumn }Order`;
+    //const column = currentColumn+'Order';
     let newOrder = Object.create({});
+    
+    // Minor: Have space betweens between blocks e.g if statement or functions 
+    // This helps with the readability of the code. 
     const columnState = {
       nameOrder:{class:'sort',sorted:false},
       priceOrder:{class:'sort',sorted:false},
@@ -41,38 +48,40 @@ const App = () => {
       quantityOrder:{class:'sort',sorted:false},
       lastModifiedOrder:{class:'sort',sorted:false}
     };
-    if (columns[column].sorted===false || columns[column].sorted==='desc'){
-      setItems(_.orderBy(items, [String(currentColumn)], ['asc']));
+
+    // Major:  Do not mix types. For example, sorted is a boolean. Use that. Or converted it to a string 
+    // with three states, neutral, desc, asc. You can also use that to control the css table class. 
+    // Mixing types is the easiest way to shoot yourself in the foot.  
+    if (columns[column].sorted === 'desc'){
+      setItems(_.orderBy(items, [currentColumn], ['asc']));
       newOrder[column] = {class: 'sort-down', sorted: 'asc'};
       const newState = {...columnState, ...newOrder};
       setColumnOrder(newState);
     }else {
-      setItems(_.orderBy(items, [String(currentColumn)], ['desc']));
+      // Not sure why you did String(currentColumn)
+      setItems(_.orderBy(items, [currentColumn], ['desc']));
       newOrder[column] = {class: 'sort-up', sorted: 'desc'};
       const newState = {...columnState, ...newOrder};
       setColumnOrder(newState);
     }
   }
-  function convertDate(rawDate, type) {
-    let date;
-    if (type==='epoch'){
-     date = new Date(Number(rawDate.toString()+'000'))
-    }
-    else { date = new Date(rawDate)}
-    return {
-      stringDate :date.toLocaleDateString('en', {
-      day : 'numeric',
-      month : 'short',
-      year : 'numeric'
-    }), numDate: date
-    }
-  }
+
+  // Date in js is messed up. Use a library like moment which can make work way easier.
+
+  // Use a consistent case e.f for functions, stick with one e.g camel case. 
   function FilterCreated(date) {
-    setDefaultDate(convertDate(date).stringDate);
+    setDefaultDate(moment(date).format('LL'));
+
     const filtered = staticItems.filter((dateCreated) => {
-      return convertDate(dateCreated.created, 'epoch').numDate <= convertDate(date).numDate});
+      return dateCreated.created <= moment(date).unix();
+    }); 
+
     setItems(filtered)
   }
+
+  // Name this as something like handleSearch or processSearch
+  // Naming is important if you have to come look at the code in a few months time 
+  // Think of it as a form of documentation. 
   function handleChange(e) {
     setSearch(e.target.value);
     const searchResult = staticItems.filter(item => {
@@ -80,6 +89,7 @@ const App = () => {
     });
     setItems(searchResult)
   }
+
   return (
     <div>
       <NavBar/>
@@ -96,7 +106,6 @@ const App = () => {
           createdOrder,
           quantityOrder,
           lastModifiedOrder}}
-        convertDate={convertDate}
         defaultDate={defaultDate}
         FilterCreated={FilterCreated}
       />
