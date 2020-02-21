@@ -2,8 +2,9 @@ import React from "react";
 
 const Search = (props) => {
   const {searchValue, handleChange} = props
-
   // Do not use inline CSS. Makes it harder to read code && do changes. Use css files instead.
+  //Tachyons
+  //Tailwind CSS
   return (
     <div className="pa4-l">
       <form className="bg-light-dark mw7 center pa1 br2-ns ba b--black-10">

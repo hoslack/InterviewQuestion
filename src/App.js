@@ -24,23 +24,29 @@ const App = () => {
   useEffect( () => {
     axios.get(process.env.REACT_APP_MAIN_URL)
       .then(res => {
-      setItems(res.data);
-      setStaticItems(res.data);
+        const styledItems = res.data && res.data.map(item => {
+          return {...item, class: 'normal'}
+        });
+      setItems(styledItems);
+      setStaticItems(styledItems);
       })
       .catch(err => {
       console.log(err)
     })}, []);
 
-
+  function handleBold(id) {
+    let newItemsArray = [...items];
+    newItemsArray[id].class = 'bold';
+    setItems(newItemsArray)
+  }
 
   function sortItems(e, currentColumn){
-    e.preventDefault();    
+    e.preventDefault();
     const column = `${ currentColumn }Order`;
-    //const column = currentColumn+'Order';
     let newOrder = Object.create({});
-    
-    // Minor: Have space betweens between blocks e.g if statement or functions 
-    // This helps with the readability of the code. 
+
+    // Minor: Have space between blocks e.g if statement or functions
+    // This helps with the readability of the code.
     const columnState = {
       nameOrder:{class:'sort',sorted:false},
       priceOrder:{class:'sort',sorted:false},
@@ -49,9 +55,9 @@ const App = () => {
       lastModifiedOrder:{class:'sort',sorted:false}
     };
 
-    // Major:  Do not mix types. For example, sorted is a boolean. Use that. Or converted it to a string 
-    // with three states, neutral, desc, asc. You can also use that to control the css table class. 
-    // Mixing types is the easiest way to shoot yourself in the foot.  
+    // Major:  Do not mix types. For example, sorted is a boolean. Use that. Or converted it to a string
+    // with three states, neutral, desc, asc. You can also use that to control the css table class.
+    // Mixing types is the easiest way to shoot yourself in the foot.
     if (columns[column].sorted === 'desc'){
       setItems(_.orderBy(items, [currentColumn], ['asc']));
       newOrder[column] = {class: 'sort-down', sorted: 'asc'};
@@ -68,20 +74,20 @@ const App = () => {
 
   // Date in js is messed up. Use a library like moment which can make work way easier.
 
-  // Use a consistent case e.f for functions, stick with one e.g camel case. 
-  function FilterCreated(date) {
+  // Use a consistent case e.f for functions, stick with one e.g camel case.
+  function filterCreated(date) {
     setDefaultDate(moment(date).format('LL'));
 
     const filtered = staticItems.filter((dateCreated) => {
       return dateCreated.created <= moment(date).unix();
-    }); 
+    });
 
     setItems(filtered)
   }
 
   // Name this as something like handleSearch or processSearch
-  // Naming is important if you have to come look at the code in a few months time 
-  // Think of it as a form of documentation. 
+  // Naming is important if you have to come look at the code in a few months time
+  // Think of it as a form of documentation.
   function handleChange(e) {
     setSearch(e.target.value);
     const searchResult = staticItems.filter(item => {
@@ -99,6 +105,7 @@ const App = () => {
       />
       <Table
         onSortClick={sortItems}
+        handleBold={handleBold}
         options={{
           items,
           nameOrder,
@@ -107,7 +114,7 @@ const App = () => {
           quantityOrder,
           lastModifiedOrder}}
         defaultDate={defaultDate}
-        FilterCreated={FilterCreated}
+        filterCreated={filterCreated}
       />
     </div>
   );

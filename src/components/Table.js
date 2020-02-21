@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import moment from 'moment';
 
 const Table = (props) => {
-  const {defaultDate, FilterCreated,
+  const {defaultDate, filterCreated, handleBold,
     options: {items, nameOrder, priceOrder, createdOrder, quantityOrder, lastModifiedOrder}, onSortClick} = props;
   return (
     <div className="pa4 fs-normal">
@@ -13,7 +13,7 @@ const Table = (props) => {
           selected={new Date(defaultDate)}
           minTime={new Date('Feb 1, 2020')}
           maxTime={new Date('Feb 29, 2020')}
-          onSelect={FilterCreated}
+          onSelect={filterCreated}
         />
       </div>
       <div className="overflow-auto">
@@ -54,9 +54,12 @@ const Table = (props) => {
           </tr>
           </thead>
           <tbody className="lh-copy">
-          {!(items === undefined || items.length === 0) && items.map(row => {
+          {!(items === undefined || items.length === 0) && items.map((row, index) => {
             return(
-            <tr className="stripe-dark br3" key={row.name}>
+            <tr className="stripe-dark br3"
+                style={{fontWeight: row.class}}
+                onClick={e => handleBold(index)}
+                key={row.name}>
               <td className="pa3 f5 br--left">{row.name}</td>
               <td className="pa3 f5 ">{row.price}</td>
               <td className="pa3 f5 ">{row.quantity}</td>
